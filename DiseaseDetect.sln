@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiseaseDetect_Engine", "DiseaseDetect_Engine\DiseaseDetect_Engine.vcxproj", "{9A7E8AAF-6541-4373-81DF-C3054D6051FA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiseaseDetect_Utilities", "DiseaseDetect_Utilities\DiseaseDetect_Utilities.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiseaseDetection_Forge", "DiseaseDetection_Forge\DiseaseDetection_Forge.vcxproj", "{65786186-8947-4894-9940-A89B51D6A4C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,12 +23,12 @@ Global
 		{9A7E8AAF-6541-4373-81DF-C3054D6051FA}.Release|x64.Build.0 = Release|x64
 		{9A7E8AAF-6541-4373-81DF-C3054D6051FA}.Release|x86.ActiveCfg = Release|Win32
 		{9A7E8AAF-6541-4373-81DF-C3054D6051FA}.Release|x86.Build.0 = Release|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.ActiveCfg = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.ActiveCfg = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.Build.0 = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.ActiveCfg = Release|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.Build.0 = Release|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Debug|x64.ActiveCfg = Debug|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Debug|x86.ActiveCfg = Debug|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Debug|x86.Build.0 = Debug|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Release|x64.ActiveCfg = Release|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Release|x86.ActiveCfg = Release|Win32
+		{65786186-8947-4894-9940-A89B51D6A4C6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

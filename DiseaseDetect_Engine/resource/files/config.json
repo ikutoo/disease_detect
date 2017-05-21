@@ -1,0 +1,10 @@
+{
+"blurType" : 0,
+"bMaft" : true,
+"detectType" : 0,
+"bProDetect" : true,
+"bColorDetect" : true,
+"varThreshold" : 90,
+"entThreshold" : 4.9,
+"binThreshold" : 50
+}

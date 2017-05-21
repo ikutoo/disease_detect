@@ -1,0 +1,39 @@
+QMenuBar {
+            color:white;
+            background-color:darkgray;
+          }
+QMenuBar::item 
+          {
+            color:white;
+            spacing: 3px; 
+            padding: 1px 4px;
+            background: gray;
+            border-radius: 4px;
+          }
+QMenuBar::item:selected 
+          { 
+            background: #a8a8a8;
+          }
+QMenuBar::item:pressed 
+          {
+            background: #888888;
+          }
+QMenu     {
+            background-color: darkgray;
+          }
+QMenu::item 
+          {
+            color:white;
+            spacing: 3px; 
+            padding: 1px 4px;
+            background: gray;
+            border-radius: 0px;
+          }
+QMenu::item:selected 
+          { 
+            background: #a8a8a8;
+          }
+QMenu:item:pressed 
+          {
+            background: #888888;
+          }

@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CMainWin</class>
+ <widget class="QMainWindow" name="CMainWin">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>902</width>
+    <height>539</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DiseaseDetectionForge</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="ui_res.qrc">
+    <normaloff>:/picture/ui_picture/ygg.png</normaloff>:/picture/ui_picture/ygg.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">font-size: 16px</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>902</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="action_newProject"/>
+    <addaction name="action_openProject"/>
+    <addaction name="action_4"/>
+    <addaction name="action_closeProject"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>编辑</string>
+    </property>
+    <addaction name="action_6"/>
+    <addaction name="action_7"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>窗口</string>
+    </property>
+    <addaction name="action_asset"/>
+    <addaction name="action_property"/>
+    <addaction name="action_console"/>
+    <addaction name="action"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>项目</string>
+    </property>
+    <widget class="QMenu" name="menu_5">
+     <property name="title">
+      <string>    语言</string>
+     </property>
+     <addaction name="action_22"/>
+     <addaction name="action_23"/>
+    </widget>
+    <addaction name="action_18"/>
+    <addaction name="menu_5"/>
+    <addaction name="action_2"/>
+    <addaction name="action_3"/>
+    <addaction name="action_5"/>
+    <addaction name="action_11"/>
+    <addaction name="action_12"/>
+   </widget>
+   <widget class="QMenu" name="menu_6">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_6"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_18"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_newFile">
+   <property name="icon">
+    <iconset resource="ui_res.qrc">
+     <normaloff>:/picture/ui_picture/toolBar/newFile.png</normaloff>:/picture/ui_picture/toolBar/newFile.png</iconset>
+   </property>
+   <property name="text">
+    <string>    新建文件  </string>
+   </property>
+  </action>
+  <action name="action_newProject">
+   <property name="text">
+    <string>    新建工程  </string>
+   </property>
+  </action>
+  <action name="action_openProject">
+   <property name="text">
+    <string>    打开工程  </string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>    保存工程  </string>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>    退出  </string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>    撤销  </string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>    重做  </string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>    复制  </string>
+   </property>
+  </action>
+  <action name="action_9">
+   <property name="text">
+    <string>    粘贴  </string>
+   </property>
+  </action>
+  <action name="action_10">
+   <property name="text">
+    <string>    剪切  </string>
+   </property>
+  </action>
+  <action name="action_object">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    对象  </string>
+   </property>
+  </action>
+  <action name="action_asset">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    资产  </string>
+   </property>
+  </action>
+  <action name="action_hierarchy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    层级  </string>
+   </property>
+  </action>
+  <action name="action_property">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    属性  </string>
+   </property>
+  </action>
+  <action name="action_game">
+   <property name="text">
+    <string>    游戏  </string>
+   </property>
+  </action>
+  <action name="action_anime">
+   <property name="text">
+    <string>    动画  </string>
+   </property>
+  </action>
+  <action name="action_console">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    输出  </string>
+   </property>
+  </action>
+  <action name="action_18">
+   <property name="icon">
+    <iconset resource="ui_res.qrc">
+     <normaloff>:/picture/ui_picture/toolBar/setting.png</normaloff>:/picture/ui_picture/toolBar/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>    项目设置  </string>
+   </property>
+  </action>
+  <action name="action_20">
+   <property name="icon">
+    <iconset resource="ui_res.qrc">
+     <normaloff>:/picture/ui_picture/toolBar/preview.png</normaloff>:/picture/ui_picture/toolBar/preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>    预览  </string>
+   </property>
+  </action>
+  <action name="action_21">
+   <property name="text">
+    <string>    发布  </string>
+   </property>
+  </action>
+  <action name="action_22">
+   <property name="text">
+    <string>    英文  </string>
+   </property>
+  </action>
+  <action name="action_23">
+   <property name="text">
+    <string>    简体中文  </string>
+   </property>
+  </action>
+  <action name="action_closeProject">
+   <property name="text">
+    <string>    关闭工程  </string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    检测结果</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>    批处理</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>    开始检测</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>    停止检测</string>
+   </property>
+  </action>
+  <action name="action_11">
+   <property name="text">
+    <string>    检测结果导出</string>
+   </property>
+  </action>
+  <action name="action_12">
+   <property name="text">
+    <string>    检测设置</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="ui_res.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>action_exit</sender>
+   <signal>triggered()</signal>
+   <receiver>CMainWin</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

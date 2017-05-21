@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <list>
+#include <vector>
 struct ImageInfo {
 	ImageInfo(unsigned int _id, std::string _path) { id = _id; path = _path; }
 	ImageInfo() {}
@@ -9,10 +10,15 @@ struct ImageInfo {
 };
 
 struct ResultInfo {
-	ResultInfo(unsigned int _id, bool _isDisease) { id = _id; isDisease = _isDisease; }
+	ResultInfo(unsigned int _id, bool _isDisease, uint8_t _type, std::list<uint16_t> _areas, std::string _path) {
+		id = _id; isDisease = _isDisease; type = _type; areas = _areas; path = _path;
+	}
 	ResultInfo() {}
 	unsigned int id;
-	bool isDisease = false;
+	bool isDisease;
+	uint8_t type;
+	std::list<uint16_t> areas;
+	std::string path;
 };
 
 struct DiseaseArea {

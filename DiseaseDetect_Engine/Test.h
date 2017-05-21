@@ -7,6 +7,10 @@
 void TestSubblockVariance(const cv::Mat& img);
 //子块信息熵测试
 void TestSubblockEntropy(const cv::Mat& img);
+//子块HSV测试
+void TestSubblockHsv(const cv::Mat& img);
+//子块RGB测试
+void TestSubblockRgb(const cv::Mat& img);
 //写出测试信息测试
 void TestWriteResultInfo();
 //读入图像信息测试
@@ -27,3 +31,5 @@ void TestProjection();
 void TestBinaryzation();
 //标记病害区域测试
 void TestTagDiseaseArea();
+
+void WriteMatrix();

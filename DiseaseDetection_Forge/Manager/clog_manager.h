@@ -1,0 +1,40 @@
+/**************************************************************************
+File:         clog_manager.h
+Author:       Song Xiaofeng
+Date:         2016-06-15
+Description:
+**************************************************************************/
+#ifndef CLOG_MANAGER_H
+#define CLOG_MANAGER_H
+
+#include <QObject>
+#include <QTextEdit>
+//////////////////////////////////////////////////////////////////
+///    Class:  CLogManager
+///    Brief:  
+//////////////////////////////////////////////////////////////////
+class CLogManager : public QObject
+{
+	Q_OBJECT
+		///////////////////////////////////////////////////////////////////
+		//all public functions are here
+		///////////////////////////////////////////////////////////////////
+public:
+	static CLogManager * getInstance();
+	void setLog(QTextEdit * log) { m_log = log; }
+	void printLog(const QString &text, int level);
+	void clearLog();
+	///////////////////////////////////////////////////////////////////
+	//all private functions are here
+	///////////////////////////////////////////////////////////////////
+private:
+	CLogManager();
+	~CLogManager();
+	///////////////////////////////////////////////////////////////////
+	//all  properties are here
+	///////////////////////////////////////////////////////////////////
+private:
+	QTextEdit * m_log;
+};
+
+#endif // CLOG_MANAGER_H

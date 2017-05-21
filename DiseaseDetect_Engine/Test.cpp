@@ -3,33 +3,64 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "Utilities.h"
+#include <fstream>
 using namespace cv;
 using namespace std;
 void TestSubblockVariance(const cv::Mat& img) {
-	std::list<uint8_t> lst;
+	std::list<DiseaseArea> lst;
+	Mat tagImg = img, dst;
 	std::cout << "\n子块方差法：\n";
-	eng::SubblockVariance(img, lst, 50);
-	for each (uint8_t  val in lst) {
-		std::cout << (int)val << "  ";
+	eng::PreProcess(img, dst);
+	eng::SubblockVariance(dst, lst, 90);
+
+	for each(DiseaseArea a in lst) {
+		cout << a.minV << "," << a.maxV << "," << a.minH << "," << a.maxH << endl;
 	}
+	cvtColor(tagImg, tagImg, CV_BGR2GRAY);
+	eng::TagDiseaseArea(tagImg, lst, 255);
+	imshow("标记图像", tagImg);
+
 }
 
 void TestSubblockEntropy(const cv::Mat& img) {
-	std::list<uint8_t> lst;
+	std::list<DiseaseArea> lst;
+	Mat tagImg = img, dst;
 	std::cout << "\n子块信息熵法：\n";
-	eng::SubblockEntropy(img, lst, 4.6);
+	eng::PreProcess(img, dst);
+	eng::SubblockEntropy(dst, lst, 4.9);
+
+	for each(DiseaseArea a in lst) {
+		cout << a.minV << "," << a.maxV << "," << a.minH << "," << a.maxH << endl;
+	}
+	cvtColor(tagImg, tagImg, CV_BGR2GRAY);
+	eng::TagDiseaseArea(tagImg, lst, 255);
+	imshow("标记图像", tagImg);
+}
+
+void TestSubblockHsv(const cv::Mat& img) {
+
+	std::list<uint8_t> lst;
+	std::cout << "\n子块HSV法：\n";
+	eng::SubblockHsv(img, lst, 4.0);
 	for each (uint8_t  val in lst) {
 		std::cout << (int)val << "  ";
 	}
+
+}
+
+void TestSubblockRgb(const cv::Mat& img) {
+
+	std::list<uint8_t> lst;
+	std::cout << "\n子块RGB法：\n";
+	eng::SubblockRgb(img, lst, 200, 150, 0.02);
+	for each (uint8_t  val in lst) {
+		std::cout << (int)val << "  ";
+	}
+
 }
 
 void TestWriteResultInfo() {
-	std::list<ResultInfo*> lst;
-	for (int i = 0; i < 100; i++) {
-		bool b = rand() % 2;
-		lst.push_back(new ResultInfo(i, b));
-	}
-	WriteResultInfo(s_finPath + "out.data", lst);
+
 }
 
 void TestReadImageInfo() {
@@ -60,16 +91,7 @@ void TestDetect() {
 }
 
 void TestReleaseData() {
-	list<ImageInfo*> lst1;
-	for (int i = 0; i < 100; i++) {
-		lst1.push_back(new ImageInfo(i, "hahaha"));
-	}
-	list<ResultInfo*> lst2;
-	for (int i = 0; i < 100; i++) {
-		lst2.push_back(new ResultInfo(i, true));
-	}
-	cout << lst1.size() << " " << lst2.size() << endl;
-	ReleaseData(lst1, lst2);
+
 }
 
 void TestProcessImage() {
@@ -88,7 +110,7 @@ void TestProcessImage() {
 }
 
 void TestAmftSrMethod() {
-	Mat src = imread(s_imgPath + "liefeng/2.jpg");
+	Mat src = imread(s_imgPath + "liefeng/6.jpg");
 	Mat dst1, dst2, dst3;
 
 	//eng::PreProcess(src, dst1);
@@ -99,7 +121,10 @@ void TestAmftSrMethod() {
 
 	Mat gray;
 	cvtColor(src, gray, CV_BGR2GRAY);
-	ShowManyImages("灰度-预处理-边缘检测-残余谱", 4, &IplImage(gray), &IplImage(dst1), &IplImage(dst2), &IplImage(dst3));
+	//ShowManyImages("灰度-预处理-边缘检测-残余谱", 4, &IplImage(gray), &IplImage(dst1), &IplImage(dst2), &IplImage(dst3));
+	//ShowManyImages("灰度-预处理-残余谱", 3, &IplImage(gray), &IplImage(dst1), &IplImage(dst3));
+	imshow("1", dst1);
+	imshow("2", dst3);
 
 	TestSubblockVariance(dst3);
 	eng::SplitGrid(dst3, 255);
@@ -112,19 +137,20 @@ void TestProjectionAnalysis() {
 }
 
 void TestProjection() {
-	Mat src = imread(s_imgPath + "liefeng/5.jpg");
+	Mat src = imread(s_imgPath_wh + "4.jpg");
+	imshow("src", src);
 	Mat dst1, dst2, dst3, dst4;
 
 	//eng::PreProcess(src, dst1);
+	//eng::PreProcess(src, dst1);
 	cvtColor(src, dst1, CV_BGR2GRAY);
-	eng::EdgeDetection_Sobel(dst1, dst2);
+	//eng::EdgeDetection_Sobel(dst1, dst2);
 
-	eng::MaftSrMethod(dst2, dst3);
+	eng::MaftSrMethod(dst1, dst3);
 
 	eng::Binaryzation(dst3, dst4, 50);
-	Mat gray;
-	cvtColor(src, gray, CV_BGR2GRAY);
-	ShowManyImages("灰度-预处理-边缘检测-残余谱-二值化", 5, &IplImage(gray), &IplImage(dst1), &IplImage(dst2), &IplImage(dst3), &IplImage(dst4));
+
+	ShowManyImages("预处理-傅里叶-二值化", 3, &IplImage(dst1), &IplImage(dst3), &IplImage(dst4));
 
 	vector<uint16_t> ver, hor;
 	eng::ProjectionStatistic(dst4, hor, ver);
@@ -137,13 +163,13 @@ void TestProjection() {
 	list<DiseaseArea> area;
 	eng::ProjectionAnalysis(dst4, hor, ver, probability, area);
 	cout << "有裂缝可能性：" << probability << endl;
-	eng::TagDiseaseArea(gray, area, 255);
-	imshow("病害区域", gray);
+	eng::TagDiseaseArea(dst1, area, 255);
+	imshow("病害区域", dst1);
 	waitKey(0);
 }
 
 void TestBinaryzation() {
-	Mat src = imread(s_imgPath + "liefeng/5.jpg");
+	Mat src = imread(s_imgPath_lf + "9.jpg");
 	Mat gray, dst;
 	cvtColor(src, gray, CV_BGR2GRAY);
 	eng::Binaryzation(gray, dst, 150);
@@ -165,4 +191,67 @@ void TestTagDiseaseArea() {
 	eng::TagDiseaseArea(gray, area, 0);
 	imshow("标记图像", gray);
 	waitKey(0);
+}
+
+void WriteMatrix() {
+	string inPath_lf = s_imgPath_lf;
+	string inPath_ps = s_imgPath_ps;
+	string inPath_sl = s_imgPath_sl;
+	string dataPath = "resource/images/data.mat";
+	string labelPath = "resource/images/label.mat";
+
+	list<ImageInfo*> lstImages_lf;
+	list<ImageInfo*> lstImages_ps;
+	list<ImageInfo*> lstImages_sl;
+	list<ImageInfo*> lstImages;
+
+	ReadImageInfo(inPath_lf, lstImages_lf);
+	ReadImageInfo(inPath_ps, lstImages_ps);
+	ReadImageInfo(inPath_sl, lstImages_sl);
+
+	ofstream osLabel(labelPath);
+	ofstream osData(dataPath);
+
+	if (!osLabel) {
+		cout << "不能打开label.mat" << endl;
+	}
+	if (!osData) {
+		cout << "不能打开data.mat" << endl;
+	}
+
+	for each (ImageInfo* p in lstImages_lf) {
+		osLabel << 1 << endl;
+		lstImages.push_back(p);
+	}
+	for each (ImageInfo* p in lstImages_ps) {
+		osLabel << 2 << endl;
+		lstImages.push_back(p);
+	}
+	for each (ImageInfo* p in lstImages_sl) {
+		osLabel << 3 << endl;
+		lstImages.push_back(p);
+	}
+	for each (ImageInfo* p in lstImages) {
+		cv::Mat src = cv::imread(p->path);
+		cv::Mat gray, dst;
+		cv::cvtColor(src, gray, CV_BGR2GRAY);
+		int resize_height = 256;
+		int resize_width = 256;
+		cv::resize(gray, dst, cv::Size(resize_width, resize_height), (0, 0), (0, 0), cv::INTER_LINEAR);
+		eng::MaftSrMethod(dst, dst);
+		eng::Binaryzation(dst, dst, 50);
+		vector<uint16_t> ver, hor;
+		eng::ProjectionStatistic(dst, hor, ver);
+		for (int i = 0; i < ver.size() - 1; ++i) {
+			osData << ver[i] << " ";
+		}
+		osData << ver[ver.size() - 1] << endl;
+		for (int i = 0; i < hor.size() - 1; ++i) {
+			osData << hor[i] << " ";
+		}
+		osData << hor[hor.size() - 1] << endl;
+	}
+
+	osLabel.close();
+	osData.close();
 }

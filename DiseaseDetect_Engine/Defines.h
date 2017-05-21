@@ -19,3 +19,8 @@ typedef unsigned long long uint64_t;
 static const std::string s_finPath = "resource/files/";
 static const std::string s_foutPath = "resource/files/";
 static const std::string s_imgPath = "resource/images/";
+static const std::string s_imgPath_lf = "resource/images/liefeng/";
+static const std::string s_imgPath_sl = "resource/images/shenlou/";
+static const std::string s_imgPath_ps = "resource/images/posun/";
+static const std::string s_imgPath_qt = "resource/images/qita/";
+static const std::string s_imgPath_wh = "resource/images/wuhai/";

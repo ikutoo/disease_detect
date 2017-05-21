@@ -5,50 +5,67 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="资源文件">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\IO">
+      <UniqueIdentifier>{a45d3f85-e218-4dd8-a7f8-c5887fd02c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core">
+      <UniqueIdentifier>{b886d47a-b2e3-42d6-86b0-3ccb5485a196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\test">
+      <UniqueIdentifier>{664d173d-9956-4c1e-90aa-664c16c5b31c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\utilities">
+      <UniqueIdentifier>{b024b221-01f4-4d42-9af5-70a54d88b0d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DataIO.cpp">
+      <Filter>源文件\IO</Filter>
+    </ClCompile>
     <ClCompile Include="DiseaseDetect.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\core</Filter>
     </ClCompile>
     <ClCompile Include="Utilities.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\utilities</Filter>
     </ClCompile>
     <ClCompile Include="Test.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\test</Filter>
     </ClCompile>
-    <ClCompile Include="DataIO.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="JsonUtil.cpp">
+      <Filter>源文件\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DiseaseDetect.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Test.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="DataIO.h">
-      <Filter>头文件</Filter>
+      <Filter>源文件\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="DiseaseDetect.h">
+      <Filter>源文件\core</Filter>
     </ClInclude>
     <ClInclude Include="BasicStructs.h">
-      <Filter>头文件</Filter>
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>源文件\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>源文件\test</Filter>
+    </ClInclude>
+    <ClInclude Include="params.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonUtil.h">
+      <Filter>源文件\utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

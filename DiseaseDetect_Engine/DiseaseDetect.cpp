@@ -1,24 +1,28 @@
 #include "DiseaseDetect.h"
 #include <math.h>
 #include <vector>
+#include "params.h"
 using namespace cv;
 using namespace std;
+
+extern std::string g_imgOutPath;
 void eng::PreProcess(const cv::Mat& src, cv::Mat& dst) {
-	cv::cvtColor(src, dst, CV_BGR2GRAY);
-	//cv::imshow("»Ò¶ÈÍ¼Ïñ", dst);
-	cv::GaussianBlur(dst, dst, cv::Size(5, 5), 0.0);
-	//cv::imshow("¸ßË¹Æ½»¬Í¼Ïñ", dst);
-	//cv::Canny(dst, dst, 3, 9, 3);
-	//cv::imshow("cannyËã×Ó±ßÔµ¼ì²â", dst);
-	//eng::EdgeDetection_Sobel(dst, dst);
-	//cv::imshow("Sobel±ßÔµ¼ì²â", dst);
-	//eng::EdgeDetection_Scharr(dst, dst);
-	//cv::imshow("Scharr±ßÔµ¼ì²â", dst);
-	//cv::Laplacian(dst, dst, CV_16S, 3, 1, 0);
-	//cv::convertScaleAbs(dst, dst);
-	//cv::imshow("Laplacian±ßÔµ¼ì²â", dst);
-	//eng::HoughLine(dst, dst);
-	//cv::imshow("»ô·òÏß±ä»»½á¹û", dst);
+	switch (s_blurType)
+	{
+	case 0:
+		cv::GaussianBlur(src, dst, cv::Size(5, 5), 0.0);
+		break;
+	case 1:
+		cv::blur(src, dst, Size(7, 7));
+		break;
+	case 2:
+		cv::boxFilter(src, dst, -1, Size(5, 5));
+		break;
+	case 3:
+		cv::medianBlur(src, dst, 7);
+		break;
+	}
+
 }
 
 void eng::SplitGrid(cv::Mat& img, uint8_t color) {
@@ -43,7 +47,86 @@ void eng::SplitGrid(cv::Mat& img, uint8_t color) {
 		}
 	}
 }
-void eng::SubblockVariance(const cv::Mat& img, std::list<uint8_t> & list, uint16_t threshold) {
+void eng::SubblockVariance(const cv::Mat& img, std::list<DiseaseArea> & list, double threshold) {
+	assert(img.channels() == 1);
+	int nr = img.rows;
+	int nc = img.cols;
+	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+	int nbc = nc / SUBBLOCK_WIDTH + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+
+	for (int i = 0; i < nbr; i++) {
+		for (int j = 0; j < nbc; j++) {
+			int np = 0;
+			float average = 0;
+			float variance = 0;
+			for (int bi = 0; bi < SUBBLOCK_HEIGHT && (bi + i*SUBBLOCK_HEIGHT < nr); bi++) {
+				const uint8_t * data = img.ptr<uint8_t>(bi + i*SUBBLOCK_HEIGHT);
+				for (int bj = 0; bj < SUBBLOCK_WIDTH && (bj + j*SUBBLOCK_WIDTH < nc); bj++) {
+					uint8_t value = data[bj + j*SUBBLOCK_WIDTH];
+					np++;
+					average += value;
+				}
+			}
+			average /= np;
+			for (int bi = 0; bi < SUBBLOCK_HEIGHT && (bi + i*SUBBLOCK_HEIGHT < nr); bi++) {
+				const uint8_t * data = img.ptr<uint8_t>(bi + i*SUBBLOCK_HEIGHT);
+				for (int bj = 0; bj < SUBBLOCK_WIDTH && (bj + j*SUBBLOCK_WIDTH < nc); bj++) {
+					uint8_t value = data[bj + j*SUBBLOCK_WIDTH];
+					variance += (value - average)*(value - average);
+				}
+			}
+			variance /= np;
+			if (variance > threshold) {
+				uint16_t minV = i*SUBBLOCK_HEIGHT, minH = j*SUBBLOCK_WIDTH;
+				uint16_t maxV = (i + 1)*SUBBLOCK_HEIGHT - 1, maxH = (j + 1)*SUBBLOCK_WIDTH - 1;
+				if (maxV >= nr) maxV = nr - 1;
+				if (maxH >= nc) maxH = nc - 1;
+				list.push_back(DiseaseArea(minV, maxV, minH, maxH));
+			}
+		}
+	}
+}
+
+void eng::SubblockEntropy(const cv::Mat& img, std::list<DiseaseArea> & list, double threshold) {
+	assert(img.channels() == 1);
+	int nr = img.rows;
+	int nc = img.cols;
+	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+	int nbc = nc / SUBBLOCK_WIDTH + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+
+	for (int i = 0; i < nbr; i++) {
+		for (int j = 0; j < nbc; j++) {
+			int np = 0;
+			float entropy = 0;
+			int count[256] = { 0 };
+			for (int bi = 0; bi < SUBBLOCK_HEIGHT && (bi + i*SUBBLOCK_HEIGHT < nr); bi++) {
+				const uint8_t * data = img.ptr<uint8_t>(bi + i*SUBBLOCK_HEIGHT);
+				for (int bj = 0; bj < SUBBLOCK_WIDTH && (bj + j*SUBBLOCK_WIDTH < nc); bj++) {
+					uint8_t value = data[bj + j*SUBBLOCK_WIDTH];
+					np++;
+					count[value]++;
+				}
+			}
+			for (int k = 0; k < 256; k++) {
+
+				if (count[k] != 0) {
+					float p = ((float)(count[k])) / np;
+					entropy += -1 * p*log(p)*LOG2_E;
+				}
+			}
+			//std::cout << entropy << std::endl;
+			if (entropy > threshold) {
+				uint16_t minV = i*SUBBLOCK_HEIGHT, minH = j*SUBBLOCK_WIDTH;
+				uint16_t maxV = (i + 1)*SUBBLOCK_HEIGHT - 1, maxH = (j + 1)*SUBBLOCK_WIDTH - 1;
+				if (maxV >= nr) maxV = nr - 1;
+				if (maxH >= nc) maxH = nc - 1;
+				list.push_back(DiseaseArea(minV, maxV, minH, maxH));
+			}
+		}
+	}
+}
+
+void eng::SubblockVariance(const cv::Mat& img, std::list<uint16_t> & list, double threshold) {
 	int nr = img.rows;
 	int nc = img.cols;
 	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
@@ -78,7 +161,7 @@ void eng::SubblockVariance(const cv::Mat& img, std::list<uint8_t> & list, uint16
 	}
 }
 
-void eng::SubblockEntropy(const cv::Mat& img, std::list<uint8_t> & list, float threshold) {
+void eng::SubblockEntropy(const cv::Mat& img, std::list<uint16_t> & list, double threshold) {
 	int nr = img.rows;
 	int nc = img.cols;
 	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
@@ -122,7 +205,7 @@ void eng::EdgeDetection_Sobel(const cv::Mat& src, cv::Mat& dst) {
 	cv::convertScaleAbs(grad_y, abs_grad_y);
 
 	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst);
-} 
+}
 
 void eng::EdgeDetection_Scharr(const cv::Mat& src, cv::Mat& dst) {
 	cv::Mat grad_x, grad_y;
@@ -371,7 +454,7 @@ void eng::ProjectionAnalysis(const cv::Mat& src, const std::vector<uint16_t>& ho
 				}
 			}
 			if (count >= minArea)
-				area.push_back(DiseaseArea(xMin, xMax, yMin, yMax));
+				area.push_back(DiseaseArea(yMin, yMax, xMin, xMax));
 		}
 	}
 }
@@ -380,16 +463,43 @@ void eng::TagDiseaseArea(cv::Mat& src, const  std::list<DiseaseArea>& area, uint
 	int nr = src.rows;
 	int nc = src.cols;
 	for each (DiseaseArea a in area) {
-		for (int i = a.minH; i <= a.maxH; i++) {
+		for (int i = a.minV; i <= a.maxV; i++) {
 			uint8_t * data = src.ptr<uint8_t>(i);
-			if (i == a.minH || i == a.maxH) {
-				for (int j = a.minV; j <= a.maxV; j++) {
+			if (i == a.minV || i == a.maxV) {
+				for (int j = a.minH; j <= a.maxH; j++) {
 					data[j] = color;
 				}
 			}
 			else {
-				data[a.minV] = color;
-				data[a.maxV] = color;
+				data[a.minH] = color;
+				data[a.maxH] = color;
+			}
+		}
+	}
+}
+
+void eng::TagDiseaseArea(cv::Mat& src, const  std::list<uint16_t>& area, uint8_t color) {
+	int nr = src.rows;
+	int nc = src.cols;
+	int nbc = nc / SUBBLOCK_WIDTH + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+	for each (uint16_t t in area) {
+		int i = t / nbc, j = t % nbc;
+		uint16_t minV = i*SUBBLOCK_HEIGHT, minH = j*SUBBLOCK_WIDTH;
+		uint16_t maxV = (i + 1)*SUBBLOCK_HEIGHT - 1, maxH = (j + 1)*SUBBLOCK_WIDTH - 1;
+		if (maxV >= nr) maxV = nr - 1;
+		if (maxH >= nc) maxH = nc - 1;
+		DiseaseArea a(minV, maxV, minH, maxH);
+
+		for (int i = a.minV; i <= a.maxV; i++) {
+			uint8_t * data = src.ptr<uint8_t>(i);
+			if (i == a.minV || i == a.maxV) {
+				for (int j = a.minH; j <= a.maxH; j++) {
+					data[j] = color;
+				}
+			}
+			else {
+				data[a.minH] = color;
+				data[a.maxH] = color;
 			}
 		}
 	}
@@ -435,19 +545,125 @@ void eng::GenerateProjectionImage(const std::vector<uint16_t>& horizontal, const
 	}
 }
 
-void ProcessImages(const std::list<ImageInfo*>& _images, std::list<ResultInfo*>& _results) {
-	for each (ImageInfo* p in _images) {
-		cv::Mat src = cv::imread(p->path);
-		cv::Mat dst;
-		eng::PreProcess(src, dst);
-		std::list<uint8_t> lst;
-		//std::cout << p->id << "  ";
-		eng::SubblockVariance(dst, lst, 50);
-		for each (uint8_t  val in lst) {
-			//std::cout << (int)val << "  ";
+
+void eng::SubblockHsv(const cv::Mat& img, std::list<uint8_t> & list, float threshold) {
+	assert(img.channels() == 3);
+	int nr = img.rows;
+	int nc = img.cols;
+	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+	int nbc = nc / SUBBLOCK_WIDTH + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+
+	for (int i = 0; i < nbr; i++) {
+		for (int j = 0; j < nbc; j++) {
+			int np = 0;
+			float average = 0;
+			for (int bi = 0; bi < SUBBLOCK_HEIGHT && (bi + i*SUBBLOCK_HEIGHT < nr); bi++) {
+				const uint8_t * data = img.ptr<uint8_t>(bi + i*SUBBLOCK_HEIGHT);
+				for (int bj = 0; bj < SUBBLOCK_WIDTH && (bj + j*SUBBLOCK_WIDTH < nc); bj++) {
+					uint8_t v = data[2 + bj * 3 + j*SUBBLOCK_WIDTH * 3];
+					np++;
+					average += v;
+				}
+			}
+			average /= np;
+			std::cout << average << std::endl;
+			if (average > threshold)
+				list.push_back(i*nbc + j);
 		}
-		//std::cout << std::endl;
-		_results.push_back(new ResultInfo(p->id, lst.size() > 5));
 	}
 }
 
+void eng::SubblockRgb(const cv::Mat& img, std::list<uint8_t> & list, float varThreshold, float rgbThreshold, float rate) {
+	assert(img.channels() == 3);
+	int nr = img.rows;
+	int nc = img.cols;
+	int nbr = nr / SUBBLOCK_HEIGHT + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+	int nbc = nc / SUBBLOCK_WIDTH + ((nr%SUBBLOCK_HEIGHT == 0) ? 0 : 1);
+
+	for (int i = 0; i < nbr; i++) {
+		for (int j = 0; j < nbc; j++) {
+			int cnt = 0;
+			for (int bi = 0; bi < SUBBLOCK_HEIGHT && (bi + i*SUBBLOCK_HEIGHT < nr); bi++) {
+				const uint8_t * data = img.ptr<uint8_t>(bi + i*SUBBLOCK_HEIGHT);
+				for (int bj = 0; bj < SUBBLOCK_WIDTH && (bj + j*SUBBLOCK_WIDTH < nc); bj++) {
+					uint8_t r = data[2 + bj * 3 + j*SUBBLOCK_WIDTH * 3];
+					uint8_t g = data[1 + bj * 3 + j*SUBBLOCK_WIDTH * 3];
+					uint8_t b = data[0 + bj * 3 + j*SUBBLOCK_WIDTH * 3];
+					float avg = (r + g + b) / 3;
+					float var = ((r - avg)*(r - avg) + (g - avg)*(g - avg) + (b - avg)*(b - avg)) / 3.0;
+					if (var < varThreshold && r < rgbThreshold &&g < rgbThreshold &&b < rgbThreshold) cnt++;
+				}
+			}
+			std::cout << cnt << std::endl;
+			if (cnt > SUBBLOCK_HEIGHT*SUBBLOCK_WIDTH*rate) {
+				list.push_back(i*nbc + j);
+			}
+		}
+	}
+}
+
+bool eng::ProjectionDetect() {
+	return true;
+}
+
+bool eng::ColorDetect() {
+	return true;
+}
+
+uint8_t eng::DetectType() {
+	 return 1;
+}
+
+void ProcessImages(const std::list<ImageInfo*>& _images, std::list<ResultInfo*>& _results) {
+	for each (ImageInfo* p in _images) {
+		cv::Mat src = cv::imread(p->path);
+		cv::Mat gray, dst, tagImg;
+		cv::cvtColor(src, gray, CV_BGR2GRAY);
+		if (s_bMaft) {
+			eng::MaftSrMethod(gray, dst);
+		}
+		else {
+			eng::PreProcess(gray, dst);
+		}
+
+		std::list<uint16_t> lst;
+		bool isDisease = false;
+		if (s_detectType == 0) {
+			eng::SubblockVariance(dst, lst, s_varThreshold);
+		}
+		else if (s_detectType == 1) {
+			eng::SubblockEntropy(dst, lst, s_entThreshold);
+		}
+
+		if (lst.size() > 0) {
+			isDisease = true;
+		}
+
+		if (isDisease) {
+			if (s_bProDetect) {
+				isDisease = isDisease && eng::ProjectionDetect();
+			}
+			if (s_bColorDetect) {
+				isDisease = isDisease && eng::ColorDetect();
+			}
+		}
+
+		if (!isDisease) {
+			lst.clear();
+			_results.push_back(new ResultInfo(p->id, false, 0, lst, p->path));
+		}
+		else {
+			uint8_t type = eng::DetectType();
+			_results.push_back(new ResultInfo(p->id, true, type, lst, p->path));
+		}
+
+		if (isDisease && g_imgOutPath != "") {
+			tagImg = gray;
+			eng::TagDiseaseArea(tagImg, lst, 255);
+			char path[128];
+			sprintf(path, "%s\\%d.bmp", g_imgOutPath.c_str(), p->id);
+			cout << path << endl;
+			imwrite(path, tagImg);
+		}
+	}
+}
